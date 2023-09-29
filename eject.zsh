@@ -5,7 +5,7 @@ diskutil list -plist external physical > "$ejectFile"
 
 diskUtilOutput=""
 
-yq -oy ".plist.[].array.[-2].string" "$ejectFile" | cut -d " " -f2- | while read line; do
+yq -oy ".plist.[].array.[-2].string" "$ejectFile" | sed "s/^- //g" | while read line; do
 	if [ "$line" != "null" ]; then
 		diskUtilOutput+=$(diskutil eject "$line")
 		diskUtilOutput+="\n"
