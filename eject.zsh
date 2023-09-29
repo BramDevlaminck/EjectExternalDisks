@@ -4,8 +4,7 @@ ejectFile="/tmp/toEject.xml"
 diskutil list -plist external physical > "$ejectFile"
 
 diskUtilOutput=""
-
-yq -oy ".plist.[].array.[-2].string" "$ejectFile" | sed "s/^- //g" | while read line; do
+/opt/homebrew/bin/yq -oy ".plist.[].array.[-2].string" "$ejectFile" | while read line; do
 	if [ "$line" != "null" ]; then
 		diskUtilOutput+=$(diskutil eject "$line")
 		diskUtilOutput+="\n"
