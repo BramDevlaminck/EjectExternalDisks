@@ -3,8 +3,18 @@
 ejectFile="/tmp/toEject.xml"
 diskutil list -plist external physical > "$ejectFile"
 
-yq -oy ".plist.[].array.[-1].string" "$ejectFile" | cut -d " " -f2 | while read line; do
-	diskutil eject "$line"
+diskUtilOutput=""
+
+yq -oy ".plist.[].array.[-2].string" "$ejectFile" | cut -d " " -f2- | while read line; do
+	if [ "$line" != "null" ]; then
+		diskUtilOutput+=$(diskutil eject "$line")
+		diskUtilOutput+="\n"
+	else
+		diskUtilOutput="No disks to eject found"
+		break
+	fi
 done
+
+osascript -e 'display notification "'"$diskUtilOutput"'" with title "Disks Ejected"'
 
 rm "$ejectFile"
